@@ -11,7 +11,7 @@ func ErrorMessage(message string, err interface{}) {
 	log.Println("Message => " + message + ".")
 
 	if err != nil {
-		log.Println("Error =>", err)
+		log.Println("Error => ", err)
 	}
 
 	log.Println("-------------------- End Of Error Message --------------------")
