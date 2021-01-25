@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"encoding/base64"
 	"encoding/binary"
-	mathRand "math/rand"
 )
 
 func ErrorMessage(message string, err interface{}) {
@@ -41,12 +40,18 @@ func RandomByte(n int) string {
 	return base64.URLEncoding.EncodeToString(Bytes(n))
 }
 
-func RandomString(length int) string {
+func Random(randomType string, length int) string {
+	var letterRunes []rune
 	var bytesBuffer bytes.Buffer
 
 	bytesBuffer.Grow(length)
 
-	letterRunes := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
+	if randomType == "str" {
+		letterRunes = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
+	} else {
+		letterRunes = []rune("0123456789")
+	}
+
 	letterLength := uint32(len(letterRunes))
 
 	for i := 0; i < length; i++ {
@@ -54,8 +59,4 @@ func RandomString(length int) string {
 	}
 
 	return bytesBuffer.String()
-}
-
-func RandomInt(min int, max int) int {
-	return min + mathRand.Intn(max-min)
 }
