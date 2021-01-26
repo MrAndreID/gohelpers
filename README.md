@@ -104,9 +104,23 @@ Output:
 6111
 ```
 
+### Handle JSON Response
+
+```go
+fmt.Println(gohelpers.HandleJSONResponse("success", "valid data", nil))
+```
+
+Output:
+
+```sh
+2009/11/10 23:00:00 Closing
+2009/11/10 23:00:00 
+{"status":"success","message":"valid data","data":null}
+```
+
 ## Full Example
 
-Full Example can be found on the [Go Playground website](https://play.golang.com/p/2rXB4wwKmEb).
+Full Example can be found on the [Go Playground website](https://play.golang.com/p/g_FZ4HkB6yY).
 
 ## Versioning
 
