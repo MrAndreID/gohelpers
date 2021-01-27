@@ -140,4 +140,4 @@ Documentation for Go Language can be found on the [Go Language website](https://
 
 ## More
 
-Documentation can be found [on godoc.org](https://godoc.org/github.com/MrAndreID/gohelpers).
+Documentation can be found [on https://go.dev/](https://pkg.go.dev/github.com/MrAndreID/gohelpers).
