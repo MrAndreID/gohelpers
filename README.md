@@ -1,6 +1,6 @@
 # MrAndreID / Go Helpers
 
-[![GoDoc](https://godoc.org/github.com/MrAndreID/gohelpers?status.svg)](https://godoc.org/github.com/MrAndreID/gohelpers) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Go Reference](https://pkg.go.dev/badge/github.com/MrAndreID/gohelpers.svg)](https://pkg.go.dev/github.com/MrAndreID/gohelpers) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 The `MrAndreID/GoHelpers` package is a collection of functions in the go language.
 
