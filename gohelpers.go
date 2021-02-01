@@ -104,7 +104,7 @@ func HandleJSONResponse(status string, message string, data interface{}) string 
 	}
 
 	log.Println("Closing")
-	log.Println()
+	fmt.Println()
 
 	return JSONEncode(responseStruct)
 }
