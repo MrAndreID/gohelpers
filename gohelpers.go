@@ -1,13 +1,17 @@
 package gohelpers
 
 import (
+	"io"
 	"fmt"
 	"log"
 	"bytes"
 	"reflect"
 	"net/http"
+	"crypto/aes"
 	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
+	"crypto/cipher"
 	"encoding/base64"
 	"encoding/binary"
 )
@@ -145,4 +149,66 @@ func Random(randomType string, length int) string {
 	}
 
 	return bytesBuffer.String()
+}
+
+func GenerateKey(length int) string {
+	return hex.EncodeToString(Bytes(length))
+}
+
+func Encrypt(key string, plainText string) (string, error) {
+	bytesKey, err := hex.DecodeString(key)
+	if err != nil {
+		return "", err
+	}
+
+	block, err := aes.NewCipher(bytesKey)
+	if err != nil {
+		return "", err
+	}
+
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		return "", err
+	}
+
+	nonce := make([]byte, aesGCM.NonceSize())
+
+	_, err = io.ReadFull(rand.Reader, nonce)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%x", aesGCM.Seal(nonce, nonce, []byte(plainText), nil)), nil
+}
+
+func Decrypt(key string, encryptedString string) (string, error) {
+	bytesKey, err := hex.DecodeString(key)
+	if err != nil {
+		return "", err
+	}
+
+	enc, err := hex.DecodeString(encryptedString)
+	if err != nil {
+		return "", err
+	}
+
+	block, err := aes.NewCipher(bytesKey)
+	if err != nil {
+		return "", err
+	}
+
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		return "", err
+	}
+
+	nonceSize := aesGCM.NonceSize()
+	nonce, cipherText := enc[:nonceSize], enc[nonceSize:]
+
+	plainText, err := aesGCM.Open(nil, nonce, cipherText, nil)
+	if err != nil {
+		return "", err
+	}
+
+	return string(plainText), nil
 }

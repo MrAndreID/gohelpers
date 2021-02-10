@@ -118,9 +118,45 @@ Output:
 {"status":"success","message":"valid data","data":null}
 ```
 
+### Generate Key
+
+```go
+fmt.Println(gohelpers.GenerateKey(32))
+```
+
+Output:
+
+```sh
+7f2f9d692d200e20133428c832b80f8e21702437fcd28ba2ac8c5aaa3a978b2d
+```
+
+### Encrypt
+
+```go
+fmt.Println(gohelpers.Encrypt(key, "Andrea Adam"))
+```
+
+Output:
+
+```sh
+b9ab3d8bde4092791b50142be86dfdc70688d81f42fa4aa06c88bcb1af6dfaa4f6c920ec157874
+```
+
+### Decrypt
+
+```go
+fmt.Println(gohelpers.Decrypt(key, encryptedPlainText))
+```
+
+Output:
+
+```sh
+Andrea Adam
+```
+
 ## Full Example
 
-Full Example can be found on the [Go Playground website](https://play.golang.com/p/g_FZ4HkB6yY).
+Full Example can be found on the [Go Playground website](https://play.golang.com/p/Xsdvgppb-LZ).
 
 ## Versioning
 
