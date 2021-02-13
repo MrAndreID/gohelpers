@@ -154,9 +154,22 @@ Output:
 Andrea Adam
 ```
 
+### Get New Line
+
+```go
+fmt.Println("Andrea" + gohelpers.GetNewLine() + "Adam")
+```
+
+Output:
+
+```sh
+Andrea
+Adam
+```
+
 ## Full Example
 
-Full Example can be found on the [Go Playground website](https://play.golang.com/p/Xsdvgppb-LZ).
+Full Example can be found on the [Go Playground website](https://play.golang.com/p/fqWEgmr2HZS).
 
 ## Versioning
 
