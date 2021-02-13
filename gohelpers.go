@@ -6,6 +6,7 @@ import (
 	"log"
 	"bytes"
 	"reflect"
+	"runtime"
 	"net/http"
 	"crypto/aes"
 	"crypto/rand"
@@ -211,4 +212,12 @@ func Decrypt(key string, encryptedString string) (string, error) {
 	}
 
 	return string(plainText), nil
+}
+
+func GetNewLine() string {
+	if runtime.GOOS == "windows" {
+		return "\r\n"
+	}
+
+	return "\n"
 }
