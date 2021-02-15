@@ -3,7 +3,6 @@ package gohelpers
 import (
 	"io"
 	"fmt"
-	"log"
 	"bytes"
 	"reflect"
 	"runtime"
@@ -15,6 +14,8 @@ import (
 	"crypto/cipher"
 	"encoding/base64"
 	"encoding/binary"
+
+	"github.com/MrAndreID/golog"
 )
 
 type Response struct {
@@ -57,16 +58,11 @@ func (response *JSONResponse) Error(message string, data interface{}) {
 }
 
 func ErrorMessage(message string, err interface{}) {
-	fmt.Println()
-	log.Println("-------------------- Start Error Message --------------------")
-	log.Println("Message => " + message + ".")
+	golog.Error("Message : " + message + ".")
 
 	if err != nil {
-		log.Println("Error => ", err)
+		golog.Error("Detail : " + fmt.Sprint(err))
 	}
-
-	log.Println("-------------------- End Of Error Message --------------------")
-	fmt.Println()
 }
 
 func HandleResponse(response http.ResponseWriter, code int, message string, data interface{}) {
@@ -108,8 +104,7 @@ func HandleJSONResponse(status string, message string, data interface{}) string 
 		}
 	}
 
-	log.Println("Closing")
-	fmt.Println()
+	golog.Info("Closing")
 
 	return JSONEncode(responseStruct)
 }

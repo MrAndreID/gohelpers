@@ -38,10 +38,8 @@ gohelpers.ErrorMessage("error loading the .env file", ".env file not found.")
 Output:
 
 ```sh
-2009/11/10 23:00:00 -------------------- Start Error Message --------------------
-2009/11/10 23:00:00 Message => error loading the .env file.
-2009/11/10 23:00:00 Error =>  .env file not found.
-2009/11/10 23:00:00 -------------------- End Of Error Message --------------------
+2021-02-15 18:45:18 [ ERROR ] Message : error loading the .env file.
+2021-02-15 18:45:18 [ ERROR ] Detail : .env file not found.
 ```
 
 ### JSON Encode
@@ -113,8 +111,7 @@ fmt.Println(gohelpers.HandleJSONResponse("success", "valid data", nil))
 Output:
 
 ```sh
-2009/11/10 23:00:00 Closing
-2009/11/10 23:00:00 
+2021-02-15 18:45:18 [ INFO ] Closing 
 {"status":"success","message":"valid data","data":null}
 ```
 
