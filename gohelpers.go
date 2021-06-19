@@ -3,10 +3,11 @@ package gohelpers
 import (
 	"io"
 	"fmt"
+	"time"
 	"bytes"
-	"reflect"
+	"errors"
 	"runtime"
-	"net/http"
+	"strings"
 	"crypto/aes"
 	"crypto/rand"
 	"encoding/hex"
@@ -16,46 +17,8 @@ import (
 	"encoding/binary"
 
 	"github.com/MrAndreID/golog"
+	"golang.org/x/crypto/bcrypt"
 )
-
-type Response struct {
-	Code	int			`json:"code"`
-	Status	string		`json:"status"`
-	Message string		`json:"message"`
-	Data	interface{}	`json:"data"`
-}
-
-type JSONResponse struct {
-	Status	string		`json:"status"`
-	Message string		`json:"message"`
-	Data	interface{}	`json:"data"`
-}
-
-func (response *Response) Success(code int, message string, data interface{}) {
-	response.Code = code
-	response.Status = "success"
-	response.Message = message
-	response.Data = data
-}
-
-func (response *Response) Error(code int, message string, data interface{}) {
-	response.Code = code
-	response.Status = "error"
-	response.Message = message
-	response.Data = data
-}
-
-func (response *JSONResponse) Success(message string, data interface{}) {
-	response.Status = "success"
-	response.Message = message
-	response.Data = data
-}
-
-func (response *JSONResponse) Error(message string, data interface{}) {
-	response.Status = "error"
-	response.Message = message
-	response.Data = data
-}
 
 func ErrorMessage(message string, err interface{}) {
 	golog.Error("Message : " + message + ".")
@@ -63,50 +26,6 @@ func ErrorMessage(message string, err interface{}) {
 	if err != nil {
 		golog.Error("Detail : " + fmt.Sprint(err))
 	}
-}
-
-func HandleResponse(response http.ResponseWriter, code int, message string, data interface{}) {
-	var responseStruct = new(Response)
-
-	if code == 200 || code == 201 || code == 202 {
-		responseStruct.Success(code, message, data)
-	} else {
-		ErrorMessage(message, data)
-
-		if data == nil {
-			responseStruct.Error(code, message, nil)
-		} else if fmt.Sprintf("%v", reflect.TypeOf(data).Kind()) == "ptr" {
-			responseStruct.Error(code, message, fmt.Sprintf("%v", data))
-		} else {
-			responseStruct.Error(code, message, data)
-		}
-	}
-
-	response.Header().Set("Content-Type", "application/json")
-	response.WriteHeader(code)
-	response.Write([]byte(JSONEncode(responseStruct)))
-}
-
-func HandleJSONResponse(status string, message string, data interface{}) string {
-	var responseStruct = new(JSONResponse)
-
-	if status == "success" {
-		responseStruct.Success(message, data)
-	} else {
-		ErrorMessage(message, data)
-
-		if data == nil {
-			responseStruct.Error(message, nil)
-		} else if fmt.Sprintf("%v", reflect.TypeOf(data).Kind()) == "ptr" {
-			responseStruct.Error(message, fmt.Sprintf("%v", data))
-		} else {
-			responseStruct.Error(message, data)
-		}
-	}
-
-	golog.Info("Closing")
-
-	return JSONEncode(responseStruct)
 }
 
 func JSONEncode(data interface{}) string {
@@ -215,4 +134,100 @@ func GetNewLine() string {
 	}
 
 	return "\n"
+}
+
+func MergeMaps(maps ...map[string]interface{}) map[string]interface{} {
+	result := map[string]interface{}{}
+
+	for _, i := range maps {
+		for j, k := range i {
+			result[j] = k
+		}
+	}
+
+	return result
+}
+
+func GenerateEncryptedKey(data []string, separator, key string) (string, error) {
+	var plainText string
+
+	for i, e := range data {
+		if i == 0 {
+			plainText = plainText + e
+		} else {
+			plainText = plainText + separator + e
+		}
+	}
+
+	encryptedData, err := Encrypt(key, plainText)
+	if err != nil {
+		return "", err
+	}
+
+	return encryptedData, nil
+}
+
+func GenerateEncryptedKeyWithDatetime(data []string, separator, key string, date time.Time) (string, error) {
+	var plainText string
+
+	for i, e := range data {
+		if i == 0 {
+			plainText = plainText + e
+		} else {
+			plainText = plainText + separator + e
+		}
+	}
+
+	plainText = plainText + separator + date.Format("2006-01-02 15:04:05")
+
+	encryptedData, err := Encrypt(key, plainText)
+	if err != nil {
+		return "", err
+	}
+
+	return encryptedData, nil
+}
+
+func UngenerateEncryptedKey(data, separator, key string) ([]string, error) {
+	plainText, err := Decrypt(key, data)
+	if err != nil {
+		return []string{}, err
+	}
+
+	return strings.Split(plainText, separator), nil
+}
+
+func GenerateHashAndSalt(plainText string, customByte int, key string, cost int) (string, string, error) {
+	if cost < 4 || cost > 31 {
+		return "", "", errors.New("the cost must be between 4 and 31")
+	}
+
+	salt := RandomByte(customByte)
+
+	encryptedSalt, _ := Encrypt(key, salt)
+
+	hash, _ := bcrypt.GenerateFromPassword([]byte(plainText + salt), cost)
+
+	encryptedHash, _ := Encrypt(key, string(hash))
+
+	return encryptedHash, encryptedSalt, nil
+}
+
+func VerifyHashAndSalt(data, encryptedHash, encryptedSalt, key string) bool {
+	hash, err := Decrypt(key, encryptedHash)
+	if err != nil {
+		return false
+	}
+
+	salt, err := Decrypt(key, encryptedSalt)
+	if err != nil {
+		return false
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(hash), []byte(data + salt))
+	if err != nil {
+		return false
+	}
+
+	return true
 }
